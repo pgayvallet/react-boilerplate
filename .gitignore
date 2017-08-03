@@ -1,0 +1,12 @@
+.idea
+*.iml
+*.idea
+.project
+.settings
+.classpath
+node_modules
+target
+.happypack
+build/*
+dist/*
+*.log
