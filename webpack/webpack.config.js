@@ -53,6 +53,9 @@ module.exports = () => {
                                 cacheDirectory : true,
                                 plugins: ["transform-runtime", "transform-object-rest-spread"]
                             }
+                        },
+                        {   // TODO : dev only
+                            loader: 'react-hot-loader/webpack'
                         }
                     ]
                 }
@@ -84,7 +87,7 @@ module.exports = () => {
             }),
 
             ///////////// DEV ONLY ->
-            // TODO : see webpack-merge
+            // TODO : see webpack-merge ?
 
             // manifest to avoid re-emit vendor on change
             new webpack.optimize.CommonsChunkPlugin({
