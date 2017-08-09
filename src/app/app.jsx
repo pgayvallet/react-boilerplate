@@ -1,12 +1,22 @@
 import * as React from "react"
-import { Provider } from "react-redux"
-import { createStore } from "./create-store"
+import { Switch } from "react-router-dom"
+import { renderRoutes } from "./routes"
 
+import { ApplicationLayout } from "./ui/layout/ApplicationLayout"
+
+require("./core/styles/reset.less")
+require("./core/styles/normalize.less")
 
 export class App extends React.Component {
 
     render() {
-        return <div>hello ca va ?</div>
+        return (
+            <ApplicationLayout>
+                <Switch>
+                    {renderRoutes()}
+                </Switch>
+            </ApplicationLayout>
+        )
     }
 
 }

@@ -1,14 +1,46 @@
 import * as React from "react";
-import { render } from "react-dom"
+import { render, unmountComponentAtNode } from "react-dom"
+import { AppContainer } from "react-hot-loader"
+import { Provider } from 'react-redux';
+import { ConnectedRouter } from "react-router-redux"
+import { createBrowserHistory } from "history"
+
+import { configureStore } from "./store"
 import { App } from "./app"
 
-const appContainerId = 'app-container';
+const history = createBrowserHistory();
+const store = configureStore(history);
 
-render(<App/>, document.getElementById(appContainerId));
+const getAppContainer = () => document.getElementById('app-container');
+
+const renderApp = () => {
+    const App = require('./app').App;
+    render(
+        <AppContainer>
+            <Provider store={store}>
+                <ConnectedRouter history={history}>
+                    <App/>
+                </ConnectedRouter>
+            </Provider>
+        </AppContainer>
+        , getAppContainer());
+};
 
 if (module.hot) {
+
+    const hotReloadApp = () => {
+        renderApp();
+    };
+
     module.hot.accept('./app', () => {
-        const ReloadedApp = require('./app').App;
-        render(<ReloadedApp/>, document.getElementById('app-container'));
+
+        // Preventing the hot reloading error from react-router
+        unmountComponentAtNode(getAppContainer());
+        hotReloadApp();
+
+        //const ReloadedApp = require('./app').App;
+        //render(<ReloadedApp/>, getAppContainer());
     })
 }
+
+renderApp();

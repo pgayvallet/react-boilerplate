@@ -7,12 +7,19 @@ const path = require('path'),
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 
 module.exports = () => {
+
+    const isDev = true;
+
+
     return {
+
+        target : 'web',
 
         context : PROJECT_ROOT,
 
         entry : {
             app     : [
+                'react-hot-loader/patch',
                 'webpack-dev-server/client?http://localhost:9000',
                 'webpack/hot/only-dev-server',
                 path.resolve(PROJECT_ROOT, "src/app/entry.jsx")
@@ -25,13 +32,18 @@ module.exports = () => {
             filename            : '[name].js',
             publicPath          : '/',
             sourceMapFilename   : '[file].map',
-            chunkFilename       : '[name].js'
+            chunkFilename       : '[name].js',
+            pathinfo            : !isDev
 
         },
 
+        devtool : "eval",
+        // devtool: forProduction ? 'sourcemap' : "eval", //"nosources-source-map", "cheap-eval-source-map" 'source-map' 'inline-source-map',
+
+
         resolve : {
 
-            extensions: ['.webpack.js', '.web.js', '.js', '.jsx', '.ts', ".tsx"],
+            extensions: ['.js', '.jsx', '.ts', '.tsx'],
 
             modules : ["node_modules"],
 
@@ -58,12 +70,45 @@ module.exports = () => {
                             loader: 'react-hot-loader/webpack'
                         }
                     ]
+                },
+
+                {
+                    test: /\.less$/,
+                    //include: /src/,
+                    exclude: /(node_modules|bower_components)/,
+                    use: [
+                        {
+                            loader : "style-loader"
+                        },
+                        {
+                            loader: "css-loader",
+                            options: {
+                                minimize: false,
+                                url : true,
+                                import : false,
+                                sourceMap: true
+                            }
+                        },
+                        {
+                            loader: "less-loader",
+                            options : {
+                                sourceMap: true,
+                                paths : [".", path.join(process.cwd(), "src/app/core/styles")]
+                            }
+                        }
+                    ]
+
+
                 }
 
             ]
         },
 
         plugins : [
+            // Global variables
+            new webpack.DefinePlugin({
+                __DEV__: isDev,
+            }),
             // vendor bundle
             new webpack.optimize.CommonsChunkPlugin({
                 name     : "vendor",
@@ -105,7 +150,11 @@ module.exports = () => {
 
         node : {
             __filename : true,
-            __dirname  : true
+            __dirname  : true,
+            fs         : 'empty',
+            vm         : 'empty',
+            net        : 'empty',
+            tls        : 'empty',
         }
 
     };
