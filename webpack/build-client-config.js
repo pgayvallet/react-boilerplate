@@ -146,7 +146,7 @@ module.exports = (env) => {
                             options: {
                                 presets: [["es2015", { modules: false }], 'flow', 'react'],
                                 cacheDirectory : true,
-                                plugins: ["transform-runtime", "transform-object-rest-spread"]
+                                plugins: ["transform-runtime", "transform-object-rest-spread", "lodash"]
                             }
                         }
                     ]
