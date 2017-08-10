@@ -6,7 +6,6 @@ import { ConnectedRouter } from "react-router-redux"
 import { createBrowserHistory } from "history"
 
 import { configureStore } from "./store"
-import { App } from "./app"
 
 const history = createBrowserHistory();
 const store = configureStore(history);
@@ -28,18 +27,12 @@ const renderApp = () => {
 
 if (module.hot) {
 
-    const hotReloadApp = () => {
-        renderApp();
-    };
+    const hotReloadApp = () => renderApp();
 
     module.hot.accept('./app', () => {
-
         // Preventing the hot reloading error from react-router
         unmountComponentAtNode(getAppContainer());
         hotReloadApp();
-
-        //const ReloadedApp = require('./app').App;
-        //render(<ReloadedApp/>, getAppContainer());
     })
 }
 
