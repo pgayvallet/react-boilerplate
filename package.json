@@ -6,7 +6,7 @@
     "start"     : "cross-env NODE_ENV=development node webpack/dev-server.js",
     "build"     : "cross-env NODE_ENV=development webpack --config webpack.config.js",
     "package"   : "cross-env NODE_ENV=production webpack --config webpack.config.js",
-    "test"      : "jest",
+    "test"      : "cross-env NODE_ENV=test jest",
     "lint:js"   : "eslint ./src",
     "precommit" : "npm run lint:js",
     "prepush"   : "npm run test"

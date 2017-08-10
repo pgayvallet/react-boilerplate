@@ -144,9 +144,7 @@ module.exports = (env) => {
                         {
                             loader: 'babel-loader',
                             options: {
-                                presets: [["es2015", { modules: false }], 'flow', 'react'],
-                                cacheDirectory : true,
-                                plugins: ["transform-runtime", "transform-object-rest-spread", "lodash"]
+                                cacheDirectory : true
                             }
                         }
                     ]
