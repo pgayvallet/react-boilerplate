@@ -4,8 +4,8 @@ import { renderRoutes } from "./routes"
 
 import { ApplicationLayout } from "./ui/layout/ApplicationLayout"
 
-require("./core/styles/reset.less")
-require("./core/styles/normalize.less")
+require("./core/styles/reset.scss")
+require("./core/styles/normalize.scss")
 
 export class App extends React.Component {
 

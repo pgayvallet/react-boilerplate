@@ -3,7 +3,7 @@
 const path = require("path"),
       webpack = require('webpack'),
       WebpackDevServer = require('webpack-dev-server'),
-      makeConfig = require("./webpack.config");
+      makeConfig = require("./build-client-config");
 
 const startWebpackServer = () => {
     const config = makeConfig();
