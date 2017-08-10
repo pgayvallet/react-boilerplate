@@ -1,9 +1,9 @@
-import * as React from "react"
+import * as React from "react";
 
 export class HomePage extends React.Component {
 
     render() {
-        return <div>Ceci est la home !</div>
+        return <div>Ceci est la home !</div>;
     }
 
 }

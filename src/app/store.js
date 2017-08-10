@@ -1,7 +1,7 @@
 import { routerMiddleware } from 'react-router-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 
-import { rootReducer } from "./reducers"
+import { rootReducer } from "./reducers";
 
 export const configureStore = (history, initialState = {}) => {
 
@@ -10,8 +10,8 @@ export const configureStore = (history, initialState = {}) => {
     ];
 
     const devToolEnhancer = () => {
-        return __DEV__ && typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ?
-            window.devToolsExtension() : f => f
+        return __DEV__ && typeof window === 'object' && typeof window.devToolsExtension !== 'undefined'
+            ? window.devToolsExtension() : f => f;
     };
 
     const enhancers = [
