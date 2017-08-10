@@ -6,7 +6,7 @@ const path = require("path"),
       makeConfig = require("./build-client-config");
 
 const startWebpackServer = () => {
-    const config = makeConfig();
+    const config = makeConfig('development');
 
     const SERVER_PORT = 9000;
 

@@ -8,10 +8,94 @@ const path = require('path'),
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 
 module.exports = (env) => {
-
     const isDev  = env === 'development';
     const isTest = env === 'test';
     const isProd = !isDev && !isTest;
+
+    const getAppEntry = () => {
+        const appEntry = path.resolve(PROJECT_ROOT, "src/app/entry.jsx");
+        if(isDev) {
+            return [
+                'react-hot-loader/patch',
+                'webpack-dev-server/client?http://localhost:9000',
+                'webpack/hot/only-dev-server',
+                appEntry
+            ]
+        } else {
+            return [appEntry]
+        }
+    };
+
+    const getPlugins = () => {
+
+        // common plugins
+        let plugins = [
+            // Global variables
+            new webpack.DefinePlugin({
+                'process.env.NODE_ENV' : JSON.stringify(env),
+                '__DEV__' : isDev,
+            }),
+            // vendor bundle
+            new webpack.optimize.CommonsChunkPlugin({
+                name     : "vendor",
+                minChunks: function (module, count) {
+                    return module.context && module.context.indexOf("node_modules") !== -1;
+                }
+            }),
+            // ignore moment locale files
+            new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+            // provide plugin
+            new webpack.ProvidePlugin({
+                // globally imported libs
+                'moment'        : "moment",
+                "_"             : "lodash",
+                "numeral"       : "numeral",
+                // all jquery aliases
+                '$'             : "jquery",
+                'jQuery'        : "jquery",
+                "window.jQuery" : "jquery",
+                "window.$"      : "jquery"
+            }),
+            // extract styles to css file
+            new ExtractTextPlugin({
+                filename    : '[name].css',
+                disable     : isDev,        // disabled in dev for hot reload.
+                publicPath  : "/",
+                allChunks   : true,         // required for code splitting, apparently
+            }),
+
+            // makes index.html
+            new HtmlWebpackPlugin({
+                template : path.resolve(PROJECT_ROOT, 'src/index.ejs'),
+            })
+
+
+        ];
+
+        // development plugins
+        if(isDev) {
+            plugins.push(
+                // Hot Reload (HMR)
+                new webpack.HotModuleReplacementPlugin(),
+                // Named Modules
+                new webpack.NamedModulesPlugin()
+            );
+        }
+
+        // production plugins
+        if(isProd) {
+            plugins.push(
+                new webpack.optimize.UglifyJsPlugin({
+                    sourceMap: true
+                    //output: {},
+                    //compress: {}
+                }),
+                new webpack.optimize.ModuleConcatenationPlugin()
+            );
+        }
+
+        return plugins;
+    };
 
     return {
 
@@ -20,12 +104,7 @@ module.exports = (env) => {
         context : PROJECT_ROOT,
 
         entry : {
-            app     : [
-                'react-hot-loader/patch',
-                'webpack-dev-server/client?http://localhost:9000',
-                'webpack/hot/only-dev-server',
-                path.resolve(PROJECT_ROOT, "src/app/entry.jsx")
-            ],
+            app     : getAppEntry(),
             vendor  : path.resolve(PROJECT_ROOT, "src/vendor/vendor.js"),
         },
 
@@ -39,7 +118,7 @@ module.exports = (env) => {
 
         },
 
-        devtool : isProd ? "sourcemap" : "eval",
+        devtool : isProd ? "hidden-sourcemap" : 'eval',
         // "eval", "nosources-source-map", "cheap-eval-source-map" 'source-map' 'inline-source-map' 'hidden-sourcemap'
 
 
@@ -65,7 +144,7 @@ module.exports = (env) => {
                         {
                             loader: 'babel-loader',
                             options: {
-                                presets: ['es2015', 'flow', 'react'],
+                                presets: [["es2015", { modules: false }], 'flow', 'react'],
                                 cacheDirectory : true,
                                 plugins: ["transform-runtime", "transform-object-rest-spread"]
                             }
@@ -188,56 +267,7 @@ module.exports = (env) => {
             ]
         },
 
-        plugins : [
-            // Global variables
-            new webpack.DefinePlugin({
-                __DEV__: isDev,
-            }),
-            // vendor bundle
-            new webpack.optimize.CommonsChunkPlugin({
-                name     : "vendor",
-                minChunks: function (module, count) {
-                    return module.context && module.context.indexOf("node_modules") !== -1;
-                }
-            }),
-            // ignore moment locale files
-            new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-            // provide plugin
-            new webpack.ProvidePlugin({
-                // globally imported libs
-                'moment'        : "moment",
-                "_"             : "lodash",
-                "numeral"       : "numeral",
-                // all jquery aliases
-                '$'             : "jquery",
-                'jQuery'        : "jquery",
-                "window.jQuery" : "jquery",
-                "window.$"      : "jquery"
-            }),
-            // extract styles to css file
-            new ExtractTextPlugin({
-                filename    : '[name].css',
-                disable     : isDev,        // disabled in dev for hot reload.
-                publicPath  : "/",
-                allChunks   : true,
-            }),
-
-            ///////////// DEV ONLY ->
-            // TODO : see webpack-merge ?
-
-            // manifest to avoid re-emit vendor on change
-            new webpack.optimize.CommonsChunkPlugin({
-                name: 'manifest'
-            }),
-            // HMR
-            new webpack.HotModuleReplacementPlugin(),
-            // makes index.html
-            new HtmlWebpackPlugin({
-                template : path.resolve(PROJECT_ROOT, 'src/index.ejs'),
-            })
-
-
-        ],
+        plugins : getPlugins(),
 
         node : {
             __filename : true,
